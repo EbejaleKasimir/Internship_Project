@@ -1,0 +1,49 @@
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 24 entries, 0 to 23
+Data columns (total 42 columns):
+ #   Column                                  Non-Null Count  Dtype  
+---  ------                                  --------------  -----  
+ 0   Product_ID                              24 non-null     object 
+ 1   product                                 24 non-null     object 
+ 2   price                                   24 non-null     float64
+ 3   ratings                                 22 non-null     float64
+ 4   review_responders                       16 non-null     float64
+ 5   reviews                                 22 non-null     object 
+ 6   url                                     24 non-null     object 
+ 7   category                                24 non-null     object 
+ 8   Customer_1_ID                           21 non-null     object 
+ 9   Customer_1_Star_Rating                  21 non-null     float64
+ 10  Customer_1_Comment                      21 non-null     object 
+ 11  Customer_1_buying_influence             21 non-null     float64
+ 12  Top_Positive_Review_Cust_ID             21 non-null     object 
+ 13  Top_Positive_Review_Cust_Name           21 non-null     object 
+ 14  Top_Positive_Review_Cust_Comment        21 non-null     object 
+ 15  Top_Positive_Review_Cust_Comment_Title  21 non-null     object 
+ 16  Top_Positive_Review_Cust_Date           20 non-null     object 
+ 17  Top_Positive_Review_Cust_Influenced     21 non-null     float64
+ 18  Top_Positive_Review_Cust_Star_Rating    21 non-null     float64
+ 19  Critical_Review_Cust_ID                 21 non-null     object 
+ 20  Critical_Review_Cust_Name               21 non-null     object 
+ 21  Critical_Review_Cust_Comment            21 non-null     object 
+ 22  Critical_Review_Cust_Comment_Title      21 non-null     object 
+ 23  Critical_Review_Cust_Date               20 non-null     object 
+ 24  Critical_Review_Cust_Influenced         21 non-null     float64
+ 25  Critical_Review_Cust_Star_Rating        21 non-null     float64
+ 26  Customer_2_ID                           21 non-null     object 
+ 27  Customer_2_Star_Rating                  21 non-null     float64
+ 28  Customer_2_Comment                      21 non-null     object 
+ 29  Customer_2_buying_influence             21 non-null     float64
+ 30  Customer_3_ID                           21 non-null     object 
+ 31  Customer_3_Star_Rating                  21 non-null     float64
+ 32  Customer_3_Comment                      21 non-null     object 
+ 33  Customer_3_buying_influence             21 non-null     float64
+ 34  Customer_4_ID                           21 non-null     object 
+ 35  Customer_4_Star_Rating                  21 non-null     float64
+ 36  Customer_4_Comment                      21 non-null     object 
+ 37  Customer_4_buying_influence             21 non-null     float64
+ 38  Customer_5_ID                           21 non-null     object 
+ 39  Customer_5_Star_Rating                  21 non-null     float64
+ 40  Customer_5_Comment                      21 non-null     object 
+ 41  Customer_5_buying_influence             21 non-null     float64
+dtypes: float64(17), object(25)
+memory usage: 8.0+ KB
