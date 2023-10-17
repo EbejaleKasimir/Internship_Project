@@ -75,7 +75,7 @@ if 'review_responders' in df.columns:
 # Clean other columns
 df['price'] = df['price'].apply(lambda value: float(value) if isinstance(value, (int, float)) else 0.0)
 df['ratings'] = df['ratings'].apply(lambda x: float(x) if pd.notna(x) else None)
-df['reviews'] = df['reviews'].str.replace('(', '').str.replace(')', '').replace(nan_variants, 0).fillna(0).astype(int)
+df['reviews'] = df['reviews'].replace('(', '').replace(')', '').replace(nan_variants, 0).fillna(0).astype(int)
 
 
 

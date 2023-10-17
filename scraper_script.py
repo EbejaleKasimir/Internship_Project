@@ -288,7 +288,7 @@ def scrape_amazon(categories):
                 # Construct the review URL using ASIN
                 if product_dict['Product_ID']:
                     asin = product_dict['Product_ID']
-                    product_dict['url'] = f"https://www.amazon.com/product-reviews/{asin}/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews"
+                    product_dict['url'] = f"https://www.amazon.com/product-reviews/{asin}/ref=cm_cr_dp_d_show_all_top?ie=UTF8&reviewerType=all_reviews&sortBy=recent"
                     
                 else:
                     product_dict['url'] = "None"
