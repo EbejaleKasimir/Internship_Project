@@ -9,6 +9,25 @@ logging.basicConfig(level=logging.INFO)
 
 # Load the JSON data into a pandas DataFrame
 df = pd.read_json('amazon_data_ext.json')
+
+# Define variations of NaN or missing values and replace in customer comment columns
+nan_variants = [np.nan, 'NaN', 'nan', 'None', 'none', 'N/A', 'n/a', 'NA', 'na', 'null', '']
+
+# Replace NaN values with 'Unavailable' in specific columns
+columns_to_replace_nan = [
+    'Critical_Review_Cust_ID', 'Critical_Review_Cust_Name', 'Critical_Review_Cust_Comment',
+    'Critical_Review_Cust_Comment_Title', 
+    'Top_Positive_Review_Cust_ID', 'Top_Positive_Review_Cust_Name', 'Top_Positive_Review_Cust_Comment',
+    'Top_Positive_Review_Cust_Comment_Title' 
+]
+for column in columns_to_replace_nan:
+    if column in df.columns:
+        df[column] = df[column].replace('(', '').replace(')', '').replace(nan_variants, "Unavailable").fillna("Unavailable")
+    else:
+        print(f"Column '{column}' not found in the DataFrame.")
+
+# Rest of the code remains unchanged
+
 # ---- START OF INSERTED CODE ----
 def fix_products_length(df):
     """Ensure each record has a length of 42 by appending None values."""
@@ -29,7 +48,7 @@ for column in columns_to_check:
         logging.warning(f"Column '{column}' not found in the DataFrame. Please check the column name in the JSON file.")
 
 # Convert date columns to datetime objects and then to 'yyyy-mm-dd' string format
-date_columns = ['Critical_Review_Cust_Date', 'Top_Positive_Review_Cust_Date']
+date_columns = ['Critical_Review_Cust_Date', 'Top_Positive_Review_Cust_Date'] + [f'Customer_{i}_Date' for i in range(1, 6)]
 for column in date_columns:
     df[column] = pd.to_datetime(df[column], errors='coerce', format='%Y-%m-%dT%H:%M:%S')
     df[column].fillna(pd.NaT, inplace=True)
@@ -45,13 +64,15 @@ columns_to_replace_nan = [
 for column in columns_to_replace_nan:
     df[column] = df[column].replace({np.nan: 'None'})
 
+
+
 # Remove any duplicates that may have been created due to URL changes
 df = df.drop_duplicates(subset=['Product_ID'], keep='first')
 
 # Replace NaN values with 'None' in customer comment and ID columns
 for i in range(1, 6):
-    df[f'Customer_{i}_Comment'] = df[f'Customer_{i}_Comment'].replace({np.nan: 'None'})
-    df[f'Customer_{i}_ID'] = df[f'Customer_{i}_ID'].replace({np.nan: 'None'})
+    df[f'Customer_{i}_Comment'] = df[f'Customer_{i}_Comment'].replace({np.nan: 'Unavailable'})
+    df[f'Customer_{i}_ID'] = df[f'Customer_{i}_ID'].replace({np.nan: 'Unavailable'})
 
 # Define variations of NaN or missing values and replace in customer comment columns
 nan_variants = [np.nan, 'NaN', 'nan', 'None', 'none', 'N/A', 'n/a', 'NA', 'na', 'null', '']
@@ -59,25 +80,27 @@ for i in range(1, 6):
     col_name = f'Customer_{i}_Comment'
     df[col_name] = df[col_name].astype(str).replace(nan_variants, 'None')
 
-# Drop rows where specific columns have undesired values
-df.dropna(subset=['price'], inplace=True)
-df.drop(df.index[df['Customer_1_ID'] == 'None'], inplace=True)
-df.drop(df.index[df['reviews'] == '0'], inplace=True)
 
 # Update the 'Critical_Review_Cust_Influenced' and 'Top_Positive_Review_Cust_Influenced' columns
 for column in ['Critical_Review_Cust_Influenced', 'Top_Positive_Review_Cust_Influenced']:
-    df[column] = df[column].replace({'"NaN"': 0.0, 'NaN': 0.0})
+    df[column] = df[column].replace({'"NaN"': 0.0, 'NaN': 0.0, 'None': 0.0})
 
 # Drop the 'review_responders' column if it exists
 if 'review_responders' in df.columns:
     df.drop(columns=['review_responders'], inplace=True)
 
 # Clean other columns
-df['price'] = df['price'].apply(lambda value: float(value) if isinstance(value, (int, float)) else 0.0)
-df['ratings'] = df['ratings'].apply(lambda x: float(x) if pd.notna(x) else None)
-df['reviews'] = df['reviews'].replace('(', '').replace(')', '').replace(nan_variants, 0).fillna(0).astype(int)
+def safe_float_conversion(value):
+    try:
+        return float(value)
+    except:
+        return 0.0
 
+df['price'] = df['price'].apply(safe_float_conversion)
+df['ratings'] = df['ratings'].apply(lambda x: float(x) if pd.notna(x) and x != '' else None)
+df['reviews'] = df['reviews'].replace(nan_variants, 0).astype(int)
 
+df['ratings'] = df['ratings'].replace('(', '').replace(')', '').replace(nan_variants, 0).fillna(0).astype(float)
 
 # Connect to PostgreSQL
 conn = psycopg2.connect(
@@ -114,7 +137,7 @@ CREATE TABLE IF NOT EXISTS amazon_data_ext (
     Critical_Review_Cust_Comment_Title TEXT,
     Critical_Review_Cust_Influenced INTEGER,
     Critical_Review_Cust_Star_Rating NUMERIC,
-    """ + ",\n    ".join([f"Customer_{i}_ID TEXT, Customer_{i}_Star_Rating NUMERIC, Customer_{i}_Comment TEXT, Customer_{i}_buying_influence INTEGER" for i in range(1, 6)]) + """
+    """ + ",\n    ".join([f"Customer_{i}_ID TEXT, Customer_{i}_Star_Rating NUMERIC, Customer_{i}_Comment TEXT, Customer_{i}_buying_influence INTEGER, Customer_{i}_Date DATE" for i in range(1, 6)]) + """
 )
 """
 cur.execute(create_table_query)
@@ -172,7 +195,8 @@ def clean_format_data(row):
         star_rating = row[f'Customer_{i}_Star_Rating'] if pd.notna(row[f'Customer_{i}_Star_Rating']) else 0.0
         comment = row[f'Customer_{i}_Comment'] if row[f'Customer_{i}_Comment'] != 'None' else "Unavailable"
         buying_influence = row[f'Customer_{i}_buying_influence'] if pd.notna(row[f'Customer_{i}_buying_influence']) else 0
-        customer_data.extend([customer_id, star_rating, comment, buying_influence])
+        customer_date = row[f'Customer_{i}_Date'] if row[f'Customer_{i}_Date'] != 'None' else '0001-01-01'  # Correctly handle NaN values
+        customer_data.extend([customer_id, star_rating, comment, buying_influence, customer_date])
 
     # Construct the return tuple
     result_tuple = (product_id, product, price, ratings, reviews, category, url, 
@@ -200,8 +224,8 @@ insert_query = """
 INSERT INTO amazon_data_ext (
     Product_ID, product, price, ratings, reviews, category, url,
     Top_Positive_Review_Cust_ID, Top_Positive_Review_Cust_Name, Top_Positive_Review_Cust_Date, Top_Positive_Review_Cust_Comment, Top_Positive_Review_Cust_Comment_Title, Top_Positive_Review_Cust_Influenced, Top_Positive_Review_Cust_Star_Rating, Critical_Review_Cust_ID, Critical_Review_Cust_Name, Critical_Review_Cust_Date, Critical_Review_Cust_Comment, Critical_Review_Cust_Comment_Title, Critical_Review_Cust_Influenced, Critical_Review_Cust_Star_Rating,
-    """ + ", ".join([f"Customer_{i}_ID, Customer_{i}_Star_Rating, Customer_{i}_Comment, Customer_{i}_buying_influence" for i in range(1, 6)]) + """
-) VALUES (""" + ", ".join(["%s"] * (21 + 20)) + ")"
+    """ + ", ".join([f"Customer_{i}_ID, Customer_{i}_Star_Rating, Customer_{i}_Comment, Customer_{i}_buying_influence, Customer_{i}_Date" for i in range(1, 6)]) + """
+) VALUES (""" + ", ".join(["%s"] * (21 + 25)) + ")"
 
 
 # Count the number of placeholders in the SQL query
@@ -220,12 +244,13 @@ for index, row in df.iterrows():
         logging.error(f"Tuple values: {tuple_values}")
         
         # Expected columns based on the INSERT query
+        # Expected columns based on the INSERT query
         expected_columns = [
             "Product_ID", "product", "price", "ratings", "reviews", "category", "url",
             "Top_Positive_Review_Cust_ID", "Top_Positive_Review_Cust_Name", "Top_Positive_Review_Cust_Date", "Top_Positive_Review_Cust_Comment", "Top_Positive_Review_Cust_Comment_Title", "Top_Positive_Review_Cust_Influenced",
             "Top_Positive_Review_Cust_Star_Rating", "Critical_Review_Cust_ID", "Critical_Review_Cust_Name", "Critical_Review_Cust_Date", "Critical_Review_Cust_Comment", "Critical_Review_Cust_Comment_Title",
             "Critical_Review_Cust_Influenced", "Critical_Review_Cust_Star_Rating"
-        ] + [f"Customer_{i}_ID" for i in range(1, 6)] + [f"Customer_{i}_Star_Rating" for i in range(1, 6)] + [f"Customer_{i}_Comment" for i in range(1, 6)] + [f"Customer_{i}_buying_influence" for i in range(1, 6)]
+        ] + [f"Customer_{i}_ID" for i in range(1, 6)] + [f"Customer_{i}_Star_Rating" for i in range(1, 6)] + [f"Customer_{i}_Comment" for i in range(1, 6)] + [f"Customer_{i}_buying_influence" for i in range(1, 6)] + [f"Customer_{i}_Date" for i in range(1, 6)]
 
 
 
