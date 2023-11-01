@@ -59,3 +59,15 @@ This project is open-source under the MIT license. We encourage the use, modific
 
 ## Collaborators and Contact <a name="collaborators-and-contact"></a>
 We invite developers to fork this repository and submit pull requests for enhancements or fixes. All contributions enrich the project. For inquiries or issues, please raise an issue or reach out to the repository maintainer.
+
+## AWS S3 Operations <a name="aws-s3-operations"></a>
+This project leverages Amazon's S3 service for data storage and retrieval. The provided notebook `aws_s3.ipynb` elucidates the following S3 operations using the `boto3` library:
+
+- **List S3 Buckets**: Enumerate all available S3 buckets.
+- **List Objects in a Bucket**: Detail all objects within a specified bucket.
+- **Upload JSON to S3**: Automate the upload of `.json` files from a local directory to a designated S3 bucket and prefix.
+- **Alternative JSON Upload**: An alternate technique to upload `.json` files to S3.
+- **Download CSV from S3**: Facilitate the download of `.csv` files from a specific S3 path to a local directory.
+- **Determine AWS Region**: Ascertain the currently configured AWS region.
+
+For a comprehensive understanding and execution of these operations, refer to the `aws_s3.ipynb` notebook.
