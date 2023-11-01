@@ -1,54 +1,61 @@
 
 # E-Commerce Sentiment Analysis for Customer Reviews
 
-This project focuses on analyzing sentiment trends across different product categories on e-commerce platforms and developing a sentiment analysis model to classify reviews.
+This project offers a comprehensive analysis of sentiment trends across various product categories on e-commerce platforms, primarily Amazon. It also entails the development of a sentiment analysis model adept at classifying customer reviews into positive, negative, and neutral sentiments.
 
-## Project Objective:
-- Analyze sentiment trends across different product categories.
-- Develop a sentiment analysis model to classify reviews as positive, negative, and neutral.
+## Table of Contents
+1. [Project Overview](#project-overview)
+2. [Data Dictionary](#data-dictionary)
+3. [Project Workflow](#project-workflow)
+4. [Setup and Execution](#setup-and-execution)
+5. [Contributions](#contributions)
+6. [License](#license)
+7. [Collaborators and Contact](#collaborators-and-contact)
 
-## Data Dictionary:
+## Project Overview <a name="project-overview"></a>
+The primary objectives of this project are:
+- To discern sentiment trends across diverse product categories.
+- To engineer a robust sentiment analysis model for review classification.
+
+## Data Dictionary <a name="data-dictionary"></a>
+
+The dataset provides detailed insights into products and associated customer reviews. Below is a breakdown of the dataset columns:
 
 | Field Name                | Description |
 |---------------------------|-------------|
-| Product_ID                | The unique identifier for the product. |
-| product                   | The name and description of the product. |
-| price_dollars             | The price of the product in USD. |
-| star_ratings              | The average star rating of the product. |
-| total_ratings             | The total number of reviews for the product. |
-| url                       | The URL link to the product page on Amazon. |
-| Customer_i_ID             | The unique identifier for each customer review (where `i` ranges from 1 to 5 for the top 5 reviews). |
-| Customer_i_Star_Rating    | The star rating given by the customer for the review. |
-| Customer_i_Comment        | The comment or feedback provided by the customer. |
-| Customer_i_buying_influence | The influence of the review on buying decisions. |
-| Customer_i_Date           | The date the review was posted. |
-| Customer_i_Unique_ID      | A unique identifier combining the `Product_ID` and `Customer_i_ID`. |
+| Product_ID                | Unique identifier for each product. |
+| product                   | Product name and description. |
+| price_dollars             | Listed price in USD. |
+| star_ratings              | Product's average star rating. |
+| total_ratings             | Total number of product reviews. |
+| url                       | Direct link to the Amazon product page. |
+| Customer_i_ID             | Unique identifier for customer reviews (with `i` indicating the review number, ranging from 1 to 5). |
+| Customer_i_Star_Rating    | Star rating provided by the customer. |
+| Customer_i_Comment        | Feedback or comment from the customer. |
+| Customer_i_buying_influence | Indicator of the review's influence on purchasing decisions. |
+| Customer_i_Date           | Date when the review was posted. |
+| Customer_i_Unique_ID      | Composite identifier combining `Product_ID` and `Customer_i_ID`. |
 
-(Note: If there are more fields in the actual dataset, they should be added to the Data Dictionary accordingly.)
+## Project Workflow <a name="project-workflow"></a>
+The project covers the following key tasks:
+1. Import necessary Python libraries.
+2. Load data from Amazon.com.
+3. Assess the data's quality and structure.
+4. Clean and preprocess the data.
+5. Conduct exploratory data analysis (EDA).
+6. Implement Natural Language Processing (NLP) techniques for sentiment analysis.
+7. Build and evaluate the sentiment classification model.
 
-## Tasks Covered:
-1. Import of Python Libraries
-2. Import of Amazon.com data
-3. Assessment of data
-4. Cleaning of data
-5. Exploratory Data Analysis (EDA)
-6. Natural Language Processing (NLP) and Sentiment Analysis
-7. Sentiment Classification Model Building and Evaluation
+## Setup and Execution <a name="setup-and-execution"></a>
+Ensure all required Python libraries, as specified in the project notebooks, are installed. Begin by executing the primary notebook (`Internship_Project.ipynb`). For additional data formatting, refer to the `create_new_csv.ipynb` notebook.
 
-## Setup and Usage:
-Ensure you have the necessary Python libraries installed as mentioned in the notebooks. Run the main notebook (`Internship_Project.ipynb`) to execute the project. Additionally, you can process the `amazon_data_ext.csv` file to format customer-related data using the `create_new_csv.ipynb` notebook. 
+The dataset originates from Amazon.com, and related scripts (`scraper_script.py` and `data_processing_script.py`) are included for extended functionalities.
 
-The dataset was scraped from Amazon.com. Associated scripts (`scraper_script.py` and `data_processing_script.py`) are provided for additional functionalities. 
+## Contributions <a name="contributions"></a>
+We welcome and appreciate contributions. For significant modifications, kindly initiate an issue for discussion before making a pull request.
 
-## Contributing:
+## License <a name="license"></a>
+This project is open-source under the MIT license. We encourage the use, modification, and distribution of the code as deemed fit.
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License:
-
-This project is open-source. Feel free to use, modify, and distribute the code as you see fit.
-
-## Collaborators and Contribution:
-Feel free to fork this repository and submit pull requests for any enhancements or fixes. All contributions are welcome.
-
-For any issues or queries, raise an issue or contact the repository owner.
+## Collaborators and Contact <a name="collaborators-and-contact"></a>
+We invite developers to fork this repository and submit pull requests for enhancements or fixes. All contributions enrich the project. For inquiries or issues, please raise an issue or reach out to the repository maintainer.
